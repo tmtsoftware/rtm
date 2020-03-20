@@ -5,6 +5,8 @@ import java.nio.file.Files
 
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 
+import tmt.test.reporter.Separators._
+
 object TestRequirementMapper {
 
   def main(args: Array[String]): Unit = {

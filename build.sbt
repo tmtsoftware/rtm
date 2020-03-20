@@ -4,6 +4,8 @@ name := "tmt-test-reporter"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.1.0"
 
+val enableFatalWarnings: SettingKey[Boolean]       = settingKey[Boolean]("enable fatal warnings")
+
 inThisBuild(
   Seq(
     organization := "com.github.tmtsoftware.rtm",
@@ -16,12 +18,10 @@ inThisBuild(
       "-feature",
       "-unchecked",
       "-deprecation",
-      //"-Xfatal-warnings",
-      "-Xlint",
-      "-Yno-adapted-args",
-      "-Ywarn-dead-code",
-      "-Xfuture",
-      //      "-Xprint:typer"
+      "-Xlint:_,-missing-interpolator",
+      "-Ywarn-dead-code"
     )
   )
 )
+
+Settings.addAliases()
