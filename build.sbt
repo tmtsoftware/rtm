@@ -2,9 +2,10 @@ import sbt.Keys.{libraryDependencies, resolvers}
 
 name := "tmt-test-reporter"
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.1.0"
+libraryDependencies += "org.scalatest" %% "scalatest"        % "3.1.0"
+libraryDependencies += "net.aichler"   % "jupiter-interface" % "0.8.3"
 
-val enableFatalWarnings: SettingKey[Boolean]       = settingKey[Boolean]("enable fatal warnings")
+val enableFatalWarnings: SettingKey[Boolean] = settingKey[Boolean]("enable fatal warnings")
 
 inThisBuild(
   Seq(
@@ -12,6 +13,7 @@ inThisBuild(
     scalaVersion := "2.13.1",
     version := "0.1.0-SNAPSHOT",
     resolvers += "jitpack" at "https://jitpack.io",
+    resolvers += "bintray" at "https://jcenter.bintray.com",
     scalacOptions ++= Seq(
       "-encoding",
       "UTF-8",
