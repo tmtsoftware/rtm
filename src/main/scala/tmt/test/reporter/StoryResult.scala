@@ -20,5 +20,5 @@ object Separators {
   val COMMA       = ',' // separator for multiple story number
   val __          = "__" // separator for java
   val UNDERSCORE  = "_"
-  val PARENTHESIS = "("
+  val PARENTHESIS = '('
 }
