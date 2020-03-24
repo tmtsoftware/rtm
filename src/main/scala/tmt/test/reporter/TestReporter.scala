@@ -22,17 +22,40 @@ class TestReporter extends Reporter {
     }
   }
 
-  private def addResult(name: String, testStatus: String): Unit = {
+  private def scalaTestParser(name: String, testStatus: String): Array[StoryResult] = {
     val i = name.lastIndexOf(Separators.PIPE)
 
     val (testName, stories) =
       if (i >= 0) name.splitAt(i)
       else (name, s"${Separators.PIPE} None")
 
-    results ++= stories
-      .drop(1) // Drop the "|"
+    stories
+      .drop(1)                 // Drop the "|"
       .split(Separators.COMMA) // multiple stories
       .map(x => StoryResult(x.strip(), testName.strip(), testStatus))
+  }
+
+  private def javaTestParser(name: String, testStatus: String): Array[StoryResult] = {
+    val i = name.lastIndexOf(Separators.__)
+
+    val (testName, stories) =
+      if (i >= 0) name.splitAt(i)
+      else (name, s"${Separators.__} None")
+
+    stories
+      .drop(2)                      // Drop the "__"
+      .split(Separators.UNDERSCORE) // multiple stories
+      .sliding(2, 2)
+      .map(x => x.mkString("-"))
+      .map(x => StoryResult(x.strip(), testName.strip(), testStatus))
+      .toArray
+  }
+
+  private def addResult(name: String, testStatus: String): Unit = {
+    val storyResults = if (name.contains(Separators.PIPE)) scalaTestParser(name, testStatus)
+    else javaTestParser(name, testStatus)
+
+    results ++= storyResults
   }
 
   private val parentPath = "./target/RTM"
@@ -43,9 +66,7 @@ class TestReporter extends Reporter {
     val file = new FileWriter(parentPath + reportFile, true)
 
     // write to file
-    results.foreach(
-      x => file.append(x.format(Separators.PIPE) + Separators.NEWLINE)
-    )
+    results.foreach(x => file.append(x.format(Separators.PIPE) + Separators.NEWLINE))
     file.close()
   }
 }
