@@ -1,8 +1,5 @@
 package tmt.test.reporter
 
-import java.io.{File, FileWriter}
-import java.nio.file.Files
-
 import org.junit.jupiter.api.extension.{AfterAllCallback, AfterTestExecutionCallback, ExtensionContext}
 
 class KtTestReporter extends AfterTestExecutionCallback with AfterAllCallback {
@@ -13,15 +10,14 @@ class KtTestReporter extends AfterTestExecutionCallback with AfterAllCallback {
   }
 
   override def afterAll(context: ExtensionContext): Unit = {
-    generateReport()
+    // fixme :: find a proper way to initialise parentPath
+    val parentPath = (sys.env ++ sys.props).getOrElse("RTM_PATH", "../../target/RTM")
+    val reportFile = "/testStoryMapping.txt"
+    CommonUtil.generateReport(parentPath, reportFile, results)
   }
 
   private def addResult(name: String, testStatus: String): Unit = {
-    val i = name.lastIndexOf(Separators.PIPE)
-
-    val (testName, stories) =
-      if (i >= 0) name.splitAt(i)
-      else (name, s"${Separators.PIPE} None")
+    val (testName, stories) = CommonUtil.getTestData(name, Separators.PIPE.toString)
 
     results ++= stories
       .drop(1)                 // Drop the "|"
@@ -33,18 +29,6 @@ class KtTestReporter extends AfterTestExecutionCallback with AfterAllCallback {
           testStatus
         )
       )
-  }
-
-  private val parentPath = (sys.env ++ sys.props).getOrElse("RTM_PATH", "../../target/RTM")
-  private val reportFile = "/testStoryMapping.txt"
-
-  private def generateReport(): Unit = {
-    Files.createDirectories(new File(parentPath).toPath)
-    val file = new FileWriter(parentPath + reportFile, true)
-
-    // write to file
-    results.foreach(x => file.append(x.format(Separators.PIPE) + Separators.NEWLINE))
-    file.close()
   }
 
 }
