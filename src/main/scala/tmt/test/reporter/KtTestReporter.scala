@@ -25,7 +25,7 @@ class KtTestReporter extends AfterTestExecutionCallback with AfterAllCallback {
       .map(x =>
         StoryResult(
           x.split(Separators.PARENTHESIS) { 0 }.strip(),
-          testName.split(Separators.PARENTHESIS) { 0 }.strip(),
+          testName.strip(),
           testStatus
         )
       )
