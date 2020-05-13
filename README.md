@@ -1,36 +1,92 @@
+# TMT Test reporters
+
+### Build setup for Test reporter
+Add following line to build.sbt
+
+```
+libraryDependencies += "com.github.tmtsoftware"  %% "rtm" % "78dd097b7a"
+```
+
+
+1. For Scala tests
+
+    ```
+    testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oDF", "-C", "tmt.test.reporter.TestReporter")
+    ```
+2. For Java tests
+
+    ```
+    testOptions in Test += Tests.Argument(TestFrameworks.JUnit)
+    ```
+3. For Kotlin tests
+
+    - Add `org.junit.jupiter.api.extension.Extension` file at this path `src/test/resources/META-INF/services/`
+    - Add following line in this file 
+    ```
+    tmt.test.reporter.KtTestReporter
+    ```
+    - Add `junit-platform.properties` file at path `src/test/resources/`
+    - Add following properties file to enable autodetection of extension
+    
+    ```
+    junit.jupiter.testinstance.lifecycle.default = per_class
+    junit.jupiter.extensions.autodetection.enabled = true
+    ```
+
+Test-Story mapping will be generated in file `./target/RTM/testStoryMapping.txt` 
+To Override the output path set env `RTM_PATH=/output-path/`
+
+### Output format for testStoryMapping.txt
+```
+STORY-NUMBER1 | TEST-NAME1 | PASSED
+```
+
+## Required format of test name
+
+1. For Scala and Kotlin tests 
+
+    Test name should be followed by pipe (`|`) and then comma separated story id's.
+
+    For ex.
+    ```
+    dummy test name | story-id-1, story-id-2
+    ```
+2. For Java tests
+
+    Test name should be followed by two underscores (`__`) and then story id's separated using single underscore(`_`)
+
+    For single story id :
+    ```
+    dumyTestName__DEOPSCSW_storyId1
+    ```
+    For multiple story id's :
+    ```
+    dumyTestName__DEOPSCSW_storyId1_DEOPSCSW_storyId2
+    ```
+
 # TMT Requirement Test Mapper
 
-## How to generate reports Manually?
 
-Steps to generate the Requirement-Test mapping:
-1. Generate the Test-Story mapping:
-    - Start the sbt shell by command `sbt -DgenerateStoryReport=true` and run `clean`.
-    - Run the tests
-    - Test-Story mapping will generated in file `./target/RTM/testStoryMapping.txt`
-    
-2. Generate the Story-Requirement mapping from JIRA:
-    - Go to the *story-requirement mapping filter* in Jira - https://tmt-project.atlassian.net/issues/?filter=17406
-    - Export a Google sheet by using the option shown in the image
-        ![screenshot](./filter.png)
-    - Remove the first row from the sheet which containing the headings of the columns.
-    - Export the sheet into a CSV file (`File -> Download -> Comma-Separated values`).
+## Prerequisites 
+- Story-Requirement mapping from JIRA.
+    The Story-Requirement mappings file need to be in the  CSV format like following-
+    ```
+    STORY-NUMBER1 , REQUIREMENT-NUMBER1
+    STORY-NUMBER2 , REQUIREMENT-NUMBER2
+    ```
+- Test-Story reports generated using TMT test reporters.
+    Reports will be generated in the following format -
+    ```
+    STORY-NUMBER1 | TEST-NAME1 | PASSED
+    STORY-NUMBER2 | TEST-NAME2 | FAILED
+    ```
 
-3. Call the TestRequirementMapper from the sbt shell by executing command
-    - `tmt-test-reporter/run <Test-Story mapping file path> <Story-Requirement mapping csv file path> <output file path>`
-    
-4. Import the generated Requirement-Test mapping in Google sheet.
-    - Go to Google sheet and import the file (`File -> Import`) and choose the file.
-    - Select a `Separator type` as `Custom` and paste a PIPE `|` in the text box.
-    - Import the data.
-    
-This will generate Requirement-Story-Test mapping in a Google sheet.
+## To generate reports
 
-
-##  How to update the Story-Requirement file for Jenkins builds?
-
- 1. Follow step 2 from the [How to generate reports Manually?](#how-to-generate-reports-manually?) 
- 2. Copy the data of CSV file into a file `./tools/RTM/storyRequirementMapping.csv` in the repo.
- 3. Commit the changed file and push the commit to github. This will trigger the jenkins build and
-data will be generated.
-
-The generated reports for any specific build can be seen at `Test-Story-Requirement mapping` -> `testRequirementMapping.txt`.
+Call the TestRequirementMapper from the bash shell by executing command with following arguments
+- test-story mapping file path (generated using test reporter)
+- story requirement mapping file path (as per above requirements)
+- output path : `./target/RTM/output.txt`
+```
+> ./scripts/coursier launch -r jitpack -r https://jcenter.bintray.com com.github.tmtsoftware:rtm_2.13:78dd097b7a -M tmt.test.reporter.TestRequirementMapper -- <path of file containing Test-Story mapping > <path of file containing Story-Requirement mapping> <output path>
+```
