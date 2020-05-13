@@ -11,9 +11,12 @@ class KtTestReporter extends AfterTestExecutionCallback with AfterAllCallback {
 
   override def afterAll(context: ExtensionContext): Unit = {
     // fixme :: find a proper way to initialise parentPath
-    val parentPath = (sys.env ++ sys.props).getOrElse("RTM_PATH", "../../target/RTM")
-    val reportFile = "/testStoryMapping.txt"
-    CommonUtil.generateReport(parentPath, reportFile, results)
+    if (results.nonEmpty) {
+      val parentPath = (sys.env ++ sys.props).getOrElse("RTM_PATH", "../../target/RTM")
+      val reportFile = "/testStoryMapping.txt"
+      CommonUtil.generateReport(parentPath, reportFile, results)
+      results = List.empty
+    }
   }
 
   private def addResult(name: String, testStatus: String): Unit = {
