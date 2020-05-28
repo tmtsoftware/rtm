@@ -88,5 +88,5 @@ Call the TestRequirementMapper from the bash shell by executing command with fol
 - story requirement mapping file path (as per above requirements)
 - output path : `./target/RTM/output.txt`
 ```
-> ./scripts/coursier launch -r jitpack -r https://jcenter.bintray.com com.github.tmtsoftware:rtm_2.13:78dd097b7a -M tmt.test.reporter.TestRequirementMapper -- <path of file containing Test-Story mapping > <path of file containing Story-Requirement mapping> <output path>
+> ./scripts/coursier launch --channel https://raw.githubusercontent.com/tmtsoftware/apps/master/apps.json rtm:47b635b289 -- <path of file containing Test-Story mapping > <path of file containing Story-Requirement mapping> <output path>
 ```
