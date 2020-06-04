@@ -43,7 +43,7 @@ object TestRequirementMapper {
 
     val requirements = requirementsContent.asScala.toList.map { line =>
       val (story, requirement) = line.splitAt(line.indexOf(COMMA)) match {
-        case (s, req) if (!s.isEmpty && !req.isEmpty) => (s, req.drop(1)) // drop to remove the first comma
+        case (s, req) if !s.isEmpty => (s, req.drop(1)) // drop to remove the first comma & requirement can be empty.
         case _ =>
           throw new RuntimeException(
             s"**** Provided data is not in valid format : '$line' ****\n" +
