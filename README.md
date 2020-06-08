@@ -71,8 +71,8 @@ STORY-NUMBER1 | TEST-NAME1 | PASSED
 - Story-Requirement mapping from JIRA.
     The Story-Requirement mappings file need to be in the  CSV format like following-
     ```
-    STORY-NUMBER1 , REQUIREMENT-NUMBER1
-    STORY-NUMBER2 , REQUIREMENT-NUMBER2
+    STORY-NUMBER1,REQUIREMENT-NUMBER1
+    STORY-NUMBER2,REQUIREMENT-NUMBER2,REQUIREMENT-NUMBER3
     ```
 - Test-Story reports generated using TMT test reporters.
     Reports will be generated in the following format -
