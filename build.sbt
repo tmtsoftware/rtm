@@ -3,7 +3,7 @@ import sbt.Keys.{libraryDependencies, resolvers}
 name := "tmt-test-reporter"
 
 libraryDependencies += "org.scalatest" %% "scalatest"        % "3.1.0"
-libraryDependencies += "net.aichler"   % "jupiter-interface" % "0.8.3"
+libraryDependencies += "net.aichler"   % "jupiter-interface" % "0.8.3" % Provided
 
 val enableFatalWarnings: SettingKey[Boolean] = settingKey[Boolean]("enable fatal warnings")
 
