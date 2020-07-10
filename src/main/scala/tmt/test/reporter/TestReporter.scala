@@ -6,7 +6,7 @@ import org.scalatest.events._
 class TestReporter extends Reporter {
   var results: List[StoryResult] = List.empty
   private val parentPath         = (sys.env ++ sys.props).getOrElse("RTM_PATH", "./target/RTM")
-  private val reportFile         = "/testStoryMapping.txt"
+  private val reportFile         = (sys.env ++ sys.props).getOrElse("OUTPUT_FILE", "/testStoryMapping.txt")
   override def apply(event: Event): Unit = {
     event match {
       case x: TestSucceeded => addResult(x.testName, "PASSED")
