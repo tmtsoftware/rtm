@@ -88,5 +88,5 @@ Call the TestRequirementMapper from the bash shell by executing command with fol
 - story requirement mapping file path (as per above requirements)
 - output path : `./target/RTM/output.txt`
 ```
-> ./scripts/coursier launch --channel https://raw.githubusercontent.com/tmtsoftware/apps/master/apps.json rtm:47b635b289 -- <path of file containing Test-Story mapping > <path of file containing Story-Requirement mapping> <output path>
+> coursier launch --channel https://raw.githubusercontent.com/tmtsoftware/osw-apps/master/apps.json rtm:47b635b289 -- <path of file containing Test-Story mapping > <path of file containing Story-Requirement mapping> <output path>
 ```
