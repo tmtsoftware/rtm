@@ -2,10 +2,11 @@ package tmt.test.reporter
 
 import java.io.{File, FileWriter}
 import java.nio.file.Files
+import java.util.Calendar
 
 import scala.jdk.CollectionConverters.CollectionHasAsScala
-
 import tmt.test.reporter.Separators._
+import scalatags.Text.all._
 
 object TestRequirementMapper {
 
@@ -54,7 +55,7 @@ object TestRequirementMapper {
       Requirement(story.strip(), requirement.strip().replaceAll("\"", ""))
     }
 
-    // map tests to requirements
+    // map tests to requirements and sort by story ID
     val testAndReqMapped = storyResults.map { storyResult =>
       val correspondingReq = requirements
         .find(_.story == storyResult.story) // find the Requirements of given story
@@ -63,6 +64,62 @@ object TestRequirementMapper {
         .getOrElse(Requirement.EMPTY)
 
       TestRequirementMapped(storyResult.story, correspondingReq, storyResult.test, storyResult.status)
+    }.sortWith((a, b) => a.story.compareTo(b.story) < 0)
+
+    def createHtmlReport(): Unit = {
+      val writer         = new FileWriter(outputPath + ".html")
+      val testAndReqGrouped = testAndReqMapped
+        .filter(s => !s.story.isEmpty && s.story != Requirement.EMPTY)
+        .groupBy(_.story)
+
+      html(
+        head(
+          raw("<style>table, th, td {border: 1px solid black; border-collapse: collapse; }</style>")
+        ),
+        body(
+          a(name := "toc"),
+          h1("RTM report"),
+          div("Generation time: ", Calendar.getInstance().getTime().toString),
+          h2("Summary"),
+          table(width := "50%")(
+            tr(
+              th("Story ID"),
+              th("Requirements"),
+              th(width := "10%")("Status")
+            ),
+            for ((storyId, testResults) <- testAndReqGrouped.toSeq) yield tr(
+              td(
+                a(href := "#" + storyId)(storyId)
+              ),
+              td(testResults(0).reqNum.replaceAllLiterally(",", ", ")),
+              if (testResults.count(t => t.status == TestStatus.PASSED) != testResults.length) td(color:="red")(TestStatus.FAILED)
+              else td(color:="green")(TestStatus.PASSED)
+            )
+          ),
+          for ((storyId, testResults) <- testAndReqGrouped.toSeq) yield div(
+            h3(
+              a(name := storyId)(storyId)
+            ),
+            p("Requirements: ", testResults(0).reqNum.replaceAllLiterally(",", ", ")),
+            p("Tests:"),
+            table(width := "50%")(
+              tr(
+                th("Test Name"),
+                th(width := "10%")("Status")
+              ),
+              for (testRes <- testResults) yield tr(
+                td(testRes.test),
+                if (testRes.status != TestStatus.PASSED) td(color:="red")(testRes.status) else td(color:="green")(testRes.status)
+              )
+            ),
+            p(
+              a(href := "#toc")("back to top")
+            )
+          ),
+        )
+      ).writeTo(writer)
+
+      writer.close()
     }
 
     val outputFile = new File(outputPath)
@@ -72,19 +129,21 @@ object TestRequirementMapper {
       val writer         = new FileWriter(outputFile.getParent + indexPath)
       val testResultFile = testResultsPath.getFileName
 
-      val content = s"""
-                       |<html>
-                       | <body>
-                       |   <a href="./$testResultFile" download>$testResultFile</a>
-                       |   <br>
-                       |   <a href="./${outputFile.getName}" download>${outputFile.getName}</a>
-                       | </body>
-                       |</html>
-                       |""".stripMargin
+      html(
+        body(
+          a(href := "./" + testResultFile, attr("download") := "")(testResultFile.toString),
+          br(),
+          a(href := "./" + outputFile.getName, attr("download") := "")(outputFile.getName),
+          br(),
+          a(href := "./" + outputFile.getName + ".html")("RTM HTML-report")
+        )
+      ).writeTo(writer)
 
-      writer.write(content)
       writer.close()
     }
+
+    // create RTM in HTML format
+    createHtmlReport()
 
     // create index.html file
     createIndexFile()
