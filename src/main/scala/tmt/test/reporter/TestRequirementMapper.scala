@@ -3,10 +3,9 @@ package tmt.test.reporter
 import java.io.{File, FileWriter}
 import java.nio.file.Files
 import java.util.Calendar
-
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 import tmt.test.reporter.Separators._
-import scalatags.Text.all._
+import scalatags.Text.all.{br, _}
 
 object TestRequirementMapper {
 
@@ -101,6 +100,9 @@ object TestRequirementMapper {
               a(name := storyId)(storyId)
             ),
             p("Requirements: ", testResults(0).reqNum.replaceAllLiterally(",", ", ")),
+            p(
+              "JIRA link: ", a(href := "https://tmt-project.atlassian.net/browse/" + storyId, target := "_blank")(storyId)
+            ),
             p("Tests:"),
             table(width := "50%")(
               tr(
@@ -114,7 +116,8 @@ object TestRequirementMapper {
             ),
             p(
               a(href := "#toc")("back to top")
-            )
+            ),
+            hr(),
           ),
         )
       ).writeTo(writer)
