@@ -2,16 +2,17 @@ import sbt.Keys.{libraryDependencies, resolvers}
 
 name := "tmt-test-reporter"
 
-libraryDependencies += "org.scalatest" %% "scalatest"        % "3.1.0"
-libraryDependencies += "net.aichler"   % "jupiter-interface" % "0.8.3" % Provided
-libraryDependencies += "com.lihaoyi" %% "scalatags" % "0.8.2"
+libraryDependencies += "org.scalatest"     %% "scalatest"         % "3.2.9"
+libraryDependencies += "net.aichler"        % "jupiter-interface" % "0.9.1" % Provided
+libraryDependencies += "com.lihaoyi"       %% "scalatags"         % "0.9.4"
+libraryDependencies += "org.scalatestplus" %% "junit-4-13"        % "3.2.9.0"
 
 val enableFatalWarnings: SettingKey[Boolean] = settingKey[Boolean]("enable fatal warnings")
 
 inThisBuild(
   Seq(
     organization := "com.github.tmtsoftware.rtm",
-    scalaVersion := "2.13.1",
+    scalaVersion := "2.13.5",
     version := "0.1.0-SNAPSHOT",
     resolvers += "jitpack" at "https://jitpack.io",
     resolvers += "bintray" at "https://jcenter.bintray.com",
