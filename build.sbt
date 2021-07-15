@@ -12,10 +12,9 @@ val enableFatalWarnings: SettingKey[Boolean] = settingKey[Boolean]("enable fatal
 inThisBuild(
   Seq(
     organization := "com.github.tmtsoftware.rtm",
-    scalaVersion := "2.13.5",
+    scalaVersion := "2.13.6",
     version := "0.1.0-SNAPSHOT",
     resolvers += "jitpack" at "https://jitpack.io",
-    resolvers += "bintray" at "https://jcenter.bintray.com",
     scalacOptions ++= Seq(
       "-encoding",
       "UTF-8",
