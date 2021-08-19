@@ -90,8 +90,9 @@ object TestRequirementMapper {
               td(
                 a(href := "#" + storyId)(storyId)
               ),
-              td(testResults(0).reqNum.replaceAllLiterally(",", ", ")),
-              if (testResults.count(t => t.status == TestStatus.PASSED) != testResults.length) td(color:="red")(TestStatus.FAILED)
+              td(testResults(0).reqNum.replace(",", ", ")),
+              if (testResults.count(t => t.status.toUpperCase == TestStatus.FAILED) > 0) td(color:="red")(TestStatus.FAILED)
+              else if (testResults.count(t => t.status.toUpperCase != TestStatus.PASSED) > 0) td(color:="orange")(TestStatus.FAILED)
               else td(color:="green")(TestStatus.PASSED)
             )
           ),
@@ -99,7 +100,7 @@ object TestRequirementMapper {
             h3(
               a(name := storyId)(storyId)
             ),
-            p("Requirements: ", testResults(0).reqNum.replaceAllLiterally(",", ", ")),
+            p("Requirements: ", testResults(0).reqNum.replace(",", ", ")),
             p(
               "JIRA link: ", a(href := "https://tmt-project.atlassian.net/browse/" + storyId, target := "_blank")(storyId)
             ),
@@ -111,7 +112,9 @@ object TestRequirementMapper {
               ),
               for (testRes <- testResults) yield tr(
                 td(testRes.test),
-                if (testRes.status != TestStatus.PASSED) td(color:="red")(testRes.status) else td(color:="green")(testRes.status)
+                if (testRes.status.toUpperCase == TestStatus.FAILED) td(color:="red")(TestStatus.FAILED)
+                else if (testRes.status.toUpperCase == TestStatus.PASSED) td(color:="green")(TestStatus.PASSED)
+                else td(color:="orange")(testRes.status.toUpperCase)
               )
             ),
             p(
