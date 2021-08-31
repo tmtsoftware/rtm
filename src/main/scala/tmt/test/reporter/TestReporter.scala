@@ -34,7 +34,14 @@ class TestReporter extends Reporter {
     stories
       .drop(1)                 // Drop the "|"
       .split(Separators.COMMA) // multiple stories
-      .map(x => StoryResult(x.strip(), testName.strip(), testStatus))
+      .map {
+        case x if x.contains("(") =>  // This case handles when using a data provider.
+          // See CSW EventSubscriberTest as an example.
+          // Moving data provider name out of story ID and to test name
+          val parts = x.split(Separators.PARENTHESIS)
+          StoryResult(parts(0).strip(), testName.strip()+"("+parts(1), testStatus)
+        case x => StoryResult(x.strip(), testName.strip(), testStatus)
+        }
   }
 
   private def javaTestParser(name: String, testStatus: String): Array[StoryResult] = {
@@ -45,7 +52,14 @@ class TestReporter extends Reporter {
       .split(Separators.UNDERSCORE) // multiple stories
       .sliding(2, 2)
       .map(x => x.mkString("-"))
-      .map(x => StoryResult(x.strip(), testName.strip(), testStatus))
+      .map {
+        case x if x.contains("(") =>  // This case handles when using a data provider.
+          // See CSW EventSubscriberTest as an example.
+          // Moving data provider name out of story ID and to test name
+          val parts = x.split(Separators.PARENTHESIS)
+          StoryResult(parts(0).strip(), testName.strip()+"("+parts(1), testStatus)
+        case x => StoryResult(x.strip(), testName.strip(), testStatus)
+      }
       .toArray
   }
 
