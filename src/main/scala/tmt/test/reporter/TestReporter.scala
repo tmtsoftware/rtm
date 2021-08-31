@@ -34,32 +34,25 @@ class TestReporter extends Reporter {
     stories
       .drop(1)                 // Drop the "|"
       .split(Separators.COMMA) // multiple stories
-      .map {
-        case x if x.contains("(") =>  // This case handles when using a data provider.
-          // See CSW EventSubscriberTest as an example.
-          // Moving data provider name out of story ID and to test name
-          val parts = x.split(Separators.PARENTHESIS)
-          StoryResult(parts(0).strip(), testName.strip()+"("+parts(1), testStatus)
-        case x => StoryResult(x.strip(), testName.strip(), testStatus)
-        }
+      .map(x => StoryResult(x.strip(), testName.strip(), testStatus))
   }
 
   private def javaTestParser(name: String, testStatus: String): Array[StoryResult] = {
     val (testName, stories) = CommonUtil.getTestData(name, Separators.__)
 
-    stories
+    // handle the data provider case (see CSW EventSubscriberTest for an example)
+    // if there is a (, take it out of stories list and append to test name
+    val (newStories, dataProvider) = stories.indexOf("(") match {
+      case -1 => (stories, "")
+      case pos => (stories.take(pos), stories.takeRight(stories.length - pos))
+    }
+
+    newStories
       .drop(2)                      // Drop the "__"
       .split(Separators.UNDERSCORE) // multiple stories
       .sliding(2, 2)
       .map(x => x.mkString("-"))
-      .map {
-        case x if x.contains("(") =>  // This case handles when using a data provider.
-          // See CSW EventSubscriberTest as an example.
-          // Moving data provider name out of story ID and to test name
-          val parts = x.split(Separators.PARENTHESIS)
-          StoryResult(parts(0).strip(), testName.strip()+"("+parts(1), testStatus)
-        case x => StoryResult(x.strip(), testName.strip(), testStatus)
-      }
+      .map(x => StoryResult(x.strip(), testName.strip()+dataProvider, testStatus))
       .toArray
   }
 
