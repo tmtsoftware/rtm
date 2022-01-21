@@ -3,7 +3,7 @@ package tmt.test.reporter
 import org.junit.jupiter.api.extension.{AfterAllCallback, AfterTestExecutionCallback, ExtensionContext}
 
 class KtTestReporter extends AfterTestExecutionCallback with AfterAllCallback {
-  var results: List[StoryResult] = List.empty
+  var results: List[StoryResult]                                   = List.empty
   override def afterTestExecution(context: ExtensionContext): Unit = {
     val testFailed = context.getExecutionException.isPresent
     addResult(context.getDisplayName, if (testFailed) "FAILED" else "PASSED")
