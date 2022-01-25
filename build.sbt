@@ -13,7 +13,7 @@ inThisBuild(
   Seq(
     organization := "com.github.tmtsoftware.rtm",
     scalaVersion := "2.13.8",
-    version := "0.1.0-SNAPSHOT",
+    version      := "0.3.0",
     resolvers += "jitpack" at "https://jitpack.io",
     scalacOptions ++= Seq(
       "-encoding",

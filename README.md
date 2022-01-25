@@ -4,7 +4,7 @@
 Add following line to build.sbt
 
 ```
-libraryDependencies += "com.github.tmtsoftware"  %% "rtm" % "0.2.0"
+libraryDependencies += "com.github.tmtsoftware"  %% "rtm" % "0.3.0"
 ```
 
 
@@ -88,5 +88,5 @@ Call the TestRequirementMapper from the bash shell by executing command with fol
 - story requirement mapping file path (as per above requirements)
 - output path : `./target/RTM/output.txt`
 ```
-> coursier launch --channel https://raw.githubusercontent.com/tmtsoftware/osw-apps/master/apps.json rtm:0.2.0 -- <path of file containing Test-Story mapping > <path of file containing Story-Requirement mapping> <output path>
+> coursier launch --channel https://raw.githubusercontent.com/tmtsoftware/osw-apps/master/apps.json rtm:0.3.0 -- <path of file containing Test-Story mapping > <path of file containing Story-Requirement mapping> <output path>
 ```
