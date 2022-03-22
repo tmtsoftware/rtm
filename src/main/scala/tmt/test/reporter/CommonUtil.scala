@@ -5,7 +5,7 @@ import java.nio.file.Files
 
 object CommonUtil {
 
-  def generateReport(parentPath: String, reportFile: String, results: List[StoryResult]): Unit = {
+  def generateReport(parentPath: String, reportFile: String, results: Iterable[StoryResult]): Unit = {
     Files.createDirectories(new File(parentPath).toPath)
     val file = new FileWriter(parentPath + reportFile, true)
 

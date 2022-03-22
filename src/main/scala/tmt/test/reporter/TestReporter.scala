@@ -3,18 +3,10 @@ package tmt.test.reporter
 import org.scalatest.Reporter
 import org.scalatest.events._
 
-object TestStatus {
-  var PASSED   = "PASSED"
-  val FAILED   = "FAILED"
-  val IGNORED  = "IGNORED"
-  val PENDING  = "PENDING"
-  val CANCELED = "CANCELED"
-}
-
 class TestReporter extends Reporter {
-  var results: List[StoryResult]         = List.empty
-  private val parentPath                 = (sys.env ++ sys.props).getOrElse("RTM_PATH", "./target/RTM")
-  private val reportFile                 = (sys.env ++ sys.props).getOrElse("OUTPUT_FILE", "/testStoryMapping.txt")
+  var results: List[StoryResult] = List.empty
+  private val parentPath         = (sys.env ++ sys.props).getOrElse("RTM_PATH", "./target/RTM")
+  private val reportFile         = (sys.env ++ sys.props).getOrElse("OUTPUT_FILE", "/testStoryMapping.txt")
   override def apply(event: Event): Unit = {
     event match {
       case x: TestSucceeded => addResult(x.testName, TestStatus.PASSED)
@@ -37,30 +29,8 @@ class TestReporter extends Reporter {
       .map(x => StoryResult(x.strip(), testName.strip(), testStatus))
   }
 
-  private def javaTestParser(name: String, testStatus: String): Array[StoryResult] = {
-    val (testName, stories) = CommonUtil.getTestData(name, Separators.__)
-
-    // handle the data provider case (see CSW EventSubscriberTest for an example)
-    // if there is a (, take it out of stories list and append to test name
-    val (newStories, dataProvider) = stories.indexOf("(") match {
-      case -1  => (stories, "")
-      case pos => (stories.take(pos), stories.takeRight(stories.length - pos))
-    }
-
-    newStories
-      .drop(2)                      // Drop the "__"
-      .split(Separators.UNDERSCORE) // multiple stories
-      .sliding(2, 2)
-      .map(x => x.mkString("-"))
-      .map(x => StoryResult(x.strip(), testName.strip() + dataProvider, testStatus))
-      .toArray
-  }
-
   private def addResult(name: String, testStatus: String): Unit = {
-    val storyResults =
-      if (name.contains(Separators.PIPE)) scalaTestParser(name, testStatus)
-      else javaTestParser(name, testStatus)
-
+    val storyResults = scalaTestParser(name, testStatus)
     results ++= storyResults
   }
 
