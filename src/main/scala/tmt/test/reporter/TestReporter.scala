@@ -4,9 +4,9 @@ import org.scalatest.Reporter
 import org.scalatest.events._
 
 class TestReporter extends Reporter {
-  var results: List[StoryResult] = List.empty
-  private val parentPath         = (sys.env ++ sys.props).getOrElse("RTM_PATH", "./target/RTM")
-  private val reportFile         = (sys.env ++ sys.props).getOrElse("OUTPUT_FILE", "/testStoryMapping.txt")
+  private var results: List[StoryResult] = List.empty
+  private val parentPath                 = (sys.env ++ sys.props).getOrElse("RTM_PATH", "./target/RTM")
+  private val reportFile                 = (sys.env ++ sys.props).getOrElse("OUTPUT_FILE", "/testStoryMapping.txt")
   override def apply(event: Event): Unit = {
     event match {
       case x: TestSucceeded => addResult(x.testName, TestStatus.PASSED)
@@ -30,7 +30,10 @@ class TestReporter extends Reporter {
   }
 
   private def addResult(name: String, testStatus: String): Unit = {
-    val storyResults = scalaTestParser(name, testStatus)
+    val storyResults =
+      if (name.contains(Separators.PIPE)) scalaTestParser(name, testStatus)
+      else CommonUtil.javaTestParser(name, testStatus)
+
     results ++= storyResults
   }
 
