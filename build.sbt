@@ -2,12 +2,14 @@ import sbt.Keys.{libraryDependencies, resolvers}
 
 name := "tmt-test-reporter"
 
-libraryDependencies += "org.scalatest"     %% "scalatest"         % "3.2.10"
-libraryDependencies += "net.aichler"        % "jupiter-interface" % "0.9.1" % Provided
-libraryDependencies += "com.lihaoyi"       %% "scalatags"         % "0.11.1"
-libraryDependencies += "org.scalatestplus" %% "junit-4-13"        % "3.2.10.0"
+libraryDependencies += "org.scalatest" %% "scalatest"         % "3.2.10"
+libraryDependencies += "net.aichler"    % "jupiter-interface" % "0.9.1" % Provided
+libraryDependencies += "com.lihaoyi"   %% "scalatags"         % "0.11.1"
+libraryDependencies += "com.github.sbt" % "junit-interface"   % "0.13.2"
 
 val enableFatalWarnings: SettingKey[Boolean] = settingKey[Boolean]("enable fatal warnings")
+
+testOptions += Tests.Argument(TestFrameworks.JUnit, "-v")
 
 inThisBuild(
   Seq(
