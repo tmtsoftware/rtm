@@ -4,14 +4,14 @@ import org.junit.runner.notification.{Failure, RunListener}
 import org.junit.runner.{Description, Result}
 
 class JUnit4TestReporter extends RunListener {
-  private var results: Set[StoryResult] = Set.empty
+  private var results: List[StoryResult] = List.empty
   private val parentPath                = (sys.env ++ sys.props).getOrElse("RTM_PATH", "./target/RTM")
   private val reportFile                = (sys.env ++ sys.props).getOrElse("OUTPUT_FILE", "/testStoryMapping.txt")
   private val failedTest                = Description.createTestDescription("FAILED", "FAILED")
 
   override def testRunFinished(result: Result): Unit = {
     CommonUtil.generateReport(parentPath, reportFile, results)
-    results = Set.empty
+    results = List.empty
   }
 
   override def testFinished(description: Description): Unit = {
