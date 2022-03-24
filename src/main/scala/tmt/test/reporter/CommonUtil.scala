@@ -5,7 +5,7 @@ import java.nio.file.Files
 
 object CommonUtil {
 
-  def generateReport(parentPath: String, reportFile: String, results: Iterable[StoryResult]): Unit = {
+  def generateReport(parentPath: String, reportFile: String, results: Iterable[StoryResult]): Unit = synchronized {
     Files.createDirectories(new File(parentPath).toPath)
     val file = new FileWriter(parentPath + reportFile, true)
 
@@ -16,7 +16,7 @@ object CommonUtil {
 
   def getTestData(name: String, separator: String): (String, String) = {
     val i = name.lastIndexOf(separator)
-    if (i >= 0) name.splitAt(i) else (name, s"${separator} None")
+    if (i >= 0) name.splitAt(i) else (name, s"$separator None")
   }
 
   def javaTestParser(name: String, testStatus: String): Array[StoryResult] = {
