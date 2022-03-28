@@ -33,7 +33,7 @@ object CommonUtil {
     // if there is a (, take it out of stories list and append to test name
     val (storyTags, parameters) = newStories.indexOf("(") match {
       case -1  => (newStories, "")
-      case pos => (newStories.take(pos), newStories.takeRight(stories.length - pos))
+      case pos => (newStories.take(pos), newStories.takeRight(newStories.length - pos))
     }
 
     storyTags
