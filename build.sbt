@@ -14,7 +14,7 @@ testOptions += Tests.Argument(TestFrameworks.JUnit, "-v")
 inThisBuild(
   Seq(
     organization := "com.github.tmtsoftware.rtm",
-    scalaVersion := "2.13.10",
+    scalaVersion := "3.2.1",
     version      := "0.3.0",
     resolvers += "jitpack" at "https://jitpack.io",
     scalacOptions ++= Seq(
@@ -23,8 +23,6 @@ inThisBuild(
       "-feature",
       "-unchecked",
       "-deprecation",
-      "-Xlint:_,-missing-interpolator",
-      "-Ywarn-dead-code"
     )
   )
 )
