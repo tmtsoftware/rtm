@@ -1,3 +1,5 @@
+name := "rtm-root"
+
 inThisBuild(
   Seq(
     organization := "com.github.tmtsoftware.rtm",
