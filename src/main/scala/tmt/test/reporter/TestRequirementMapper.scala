@@ -43,7 +43,7 @@ object TestRequirementMapper {
 
     val requirements = requirementsContent.asScala.toList.map { line =>
       val (story, requirement) = line.splitAt(line.indexOf(COMMA)) match {
-        case (s, req) if !s.isEmpty => (s, req.drop(1)) // drop to remove the first comma & requirement can be empty.
+        case (s, req) if s.nonEmpty => (s, req.drop(1)) // drop to remove the first comma & requirement can be empty.
         case _ =>
           throw new RuntimeException(
             s"**** Provided data is not in valid format : '$line' ****\n" +
@@ -59,74 +59,11 @@ object TestRequirementMapper {
       val correspondingReq = requirements
         .find(_.story == storyResult.story) // find the Requirements of given story
         .map(_.number)                      // take out the Requirement number
-        .filter(!_.isEmpty)                 // remove if Requirement number is empty
+        .filter(_.nonEmpty)                 // remove if Requirement number is empty
         .getOrElse(Requirement.EMPTY)
 
       TestRequirementMapped(storyResult.story, correspondingReq, storyResult.test, storyResult.status)
     }.sortWith((a, b) => a.story.compareTo(b.story) < 0)
-
-    def createHtmlReport(): Unit = {
-      val writer         = new FileWriter(outputPath + ".html")
-      val testAndReqGrouped = testAndReqMapped
-        .filter(s => !s.story.isEmpty && s.story != Requirement.EMPTY)
-        .groupBy(_.story)
-
-      html(
-        head(
-          raw("<style>table, th, td {border: 1px solid black; border-collapse: collapse; }</style>")
-        ),
-        body(
-          a(name := "toc"),
-          h1("RTM report"),
-          div("Generation time: ", Calendar.getInstance().getTime().toString),
-          h2("Summary"),
-          table(width := "50%")(
-            tr(
-              th("Story ID"),
-              th("Requirements"),
-              th(width := "10%")("Status")
-            ),
-            for ((storyId, testResults) <- testAndReqGrouped.toSeq) yield tr(
-              td(
-                a(href := "#" + storyId)(storyId)
-              ),
-              td(testResults(0).reqNum.replace(",", ", ")),
-              if (testResults.count(t => t.status.toUpperCase == TestStatus.FAILED) > 0) td(color:="red")(TestStatus.FAILED)
-              else if (testResults.count(t => t.status.toUpperCase != TestStatus.PASSED) > 0) td(color:="orange")(TestStatus.FAILED)
-              else td(color:="green")(TestStatus.PASSED)
-            )
-          ),
-          for ((storyId, testResults) <- testAndReqGrouped.toSeq) yield div(
-            h3(
-              a(name := storyId)(storyId)
-            ),
-            p("Requirements: ", testResults(0).reqNum.replace(",", ", ")),
-            p(
-              "JIRA link: ", a(href := "https://tmt-project.atlassian.net/browse/" + storyId, target := "_blank")(storyId)
-            ),
-            p("Tests:"),
-            table(width := "50%")(
-              tr(
-                th("Test Name"),
-                th(width := "10%")("Status")
-              ),
-              for (testRes <- testResults) yield tr(
-                td(testRes.test),
-                if (testRes.status.toUpperCase == TestStatus.FAILED) td(color:="red")(TestStatus.FAILED)
-                else if (testRes.status.toUpperCase == TestStatus.PASSED) td(color:="green")(TestStatus.PASSED)
-                else td(color:="orange")(testRes.status.toUpperCase)
-              )
-            ),
-            p(
-              a(href := "#toc")("back to top")
-            ),
-            hr(),
-          ),
-        )
-      ).writeTo(writer)
-
-      writer.close()
-    }
 
     val outputFile = new File(outputPath)
     val indexPath  = "/index.html"
@@ -149,19 +86,87 @@ object TestRequirementMapper {
     }
 
     // create RTM in HTML format
-    createHtmlReport()
+    createHtmlReport(outputPath+ ".html", testAndReqMapped)
 
     // create index.html file
     createIndexFile()
 
-    // write to file
+    // write to csv-file
     println("[INFO] Writing results to - " + outputPath)
     Files.createDirectories(outputFile.getParentFile.toPath)
-    val writer = new FileWriter(outputPath)
-    testAndReqMapped.map(result => result.format(PIPE) + NEWLINE).foreach(writer.write)
-    writer.close()
+    createCsvFile(outputPath, testAndReqMapped)
     println(
       s"**** Successfully mapped Test results to Requirements **** : Check ${new File(outputPath).getCanonicalPath} for results"
     )
   }
+
+  def createCsvFile(outputPath: String, testAndReqMapped: List[TestRequirementMapped]): Unit = {
+    val writer = new FileWriter(outputPath)
+    testAndReqMapped.map(result => result.format(PIPE) + NEWLINE).foreach(writer.write)
+    writer.close()
+  }
+
+  def createHtmlReport(outputPath: String, testAndReqMapped: List[TestRequirementMapped]): Unit = {
+    val writer         = new FileWriter(outputPath)
+    val testAndReqGrouped = testAndReqMapped
+      .filter(s => s.story.nonEmpty && s.story != Requirement.EMPTY)
+      .groupBy(_.story)
+
+    html(
+      head(
+        raw("<style>table, th, td {border: 1px solid black; border-collapse: collapse; }</style>")
+      ),
+      body(
+        a(name := "toc"),
+        h1("RTM report"),
+        div("Generation time: ", Calendar.getInstance().getTime().toString),
+        h2("Summary"),
+        table(width := "50%")(
+          tr(
+            th("Story ID"),
+            th("Requirements"),
+            th(width := "10%")("Status")
+          ),
+          for ((storyId, testResults) <- testAndReqGrouped.toSeq) yield tr(
+            td(
+              a(href := "#" + storyId)(storyId)
+            ),
+            td(testResults(0).reqNum.replace(",", ", ")),
+            if (testResults.count(t => t.status.toUpperCase == TestStatus.FAILED) > 0) td(color:="red")(TestStatus.FAILED)
+            else if (testResults.count(t => t.status.toUpperCase != TestStatus.PASSED) > 0) td(color:="orange")(TestStatus.FAILED)
+            else td(color:="green")(TestStatus.PASSED)
+          )
+        ),
+        for ((storyId, testResults) <- testAndReqGrouped.toSeq) yield div(
+          h3(
+            a(name := storyId)(storyId)
+          ),
+          p("Requirements: ", testResults(0).reqNum.replace(",", ", ")),
+          p(
+            "JIRA link: ", a(href := "https://tmt-project.atlassian.net/browse/" + storyId, target := "_blank")(storyId)
+          ),
+          p("Tests:"),
+          table(width := "50%")(
+            tr(
+              th("Test Name"),
+              th(width := "10%")("Status")
+            ),
+            for (testRes <- testResults) yield tr(
+              td(testRes.test),
+              if (testRes.status.toUpperCase == TestStatus.FAILED) td(color:="red")(TestStatus.FAILED)
+              else if (testRes.status.toUpperCase == TestStatus.PASSED) td(color:="green")(TestStatus.PASSED)
+              else td(color:="orange")(testRes.status.toUpperCase)
+            )
+          ),
+          p(
+            a(href := "#toc")("back to top")
+          ),
+          hr(),
+        ),
+      )
+    ).writeTo(writer)
+
+    writer.close()
+  }
+
 }

@@ -64,12 +64,12 @@ STORY-NUMBER1 | TEST-NAME1 | PASSED
     dumyTestName__DEOPSCSW_storyId1_DEOPSCSW_storyId2
     ```
 
-# TMT Requirement Test Mapper
+# TMT Requirement Test Mapper (aka RTM)
 
 
 ## Prerequisites 
 - Story-Requirement mapping from JIRA.
-    The Story-Requirement mappings file need to be in the  CSV format like following-
+    The Story-Requirement mappings file need to be in the CSV format like following-
     ```
     STORY-NUMBER1,REQUIREMENT-NUMBER1
     STORY-NUMBER2,REQUIREMENT-NUMBER2,REQUIREMENT-NUMBER3
@@ -81,7 +81,7 @@ STORY-NUMBER1 | TEST-NAME1 | PASSED
     STORY-NUMBER2 | TEST-NAME2 | FAILED
     ```
 
-## To generate reports
+## To generate RTM-reports
 
 Call the TestRequirementMapper from the bash shell by executing command with following arguments
 - test-story mapping file path (generated using test reporter)
@@ -90,3 +90,22 @@ Call the TestRequirementMapper from the bash shell by executing command with fol
 ```
 > coursier launch --channel https://raw.githubusercontent.com/tmtsoftware/osw-apps/master/apps.json rtm:0.2.0 -- <path of file containing Test-Story mapping > <path of file containing Story-Requirement mapping> <output path>
 ```
+
+## To aggregate several RTM-reports
+
+For some projects (for example ESW), the final RTM will consist of several RTMs from subprojects. 
+There is a special command to aggregate many RTM-reports into one, i.e. for ESW it will look like:
+```shell
+sbt "runMain tmt.test.reporter.RtmAggregator esw:path/to/rtm.txt esw-ts:path/to/rtm.txt esw-ocs-eng-ui:path/to/rtm.txt esw-observing-simulation:path/to/rtm.txt"
+```
+Here, we are aggregating RTM-reports from four subproject into one. Each RTM-report is specified as a parameter (for example `esw:path/to/rtm.txt`) with the format:
+```shell
+<sub-project>:<path-to-rtm>
+```
+Where:
+- `<sub-project>` some unique tag that you want to use in the aggregated RTM-report for the given subproject
+- `<path-to-rtm>` path to RTM-report for the given subproject
+
+As an output of the command, there will be created two files in the current folder:
+- `aggregated.txt` - aggregated RTM-report in CSV format
+- `aggregated.html` - aggregated RTM-report in HTML format
