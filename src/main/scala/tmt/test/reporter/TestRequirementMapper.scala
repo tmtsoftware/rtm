@@ -14,7 +14,7 @@ object TestRequirementMapper {
     // read program parameters
     val (testResultsFile, requirementsFile, outputPath) = args.toList match {
       case t :: r :: o :: Nil => (t, r, o)
-      case _ =>
+      case _                  =>
         throw new RuntimeException(
           "**** Provide appropriate parameters. **** \n " +
             "Required parameters : <file with test-story mapping> <file with story-requirement mapping> <output file>"
@@ -24,11 +24,11 @@ object TestRequirementMapper {
     // read test-story mapping
     val testResultsPath = new File(testResultsFile).toPath.toAbsolutePath
     println("[INFO] Reading test-story mapping file - " + testResultsPath)
-    val testResults = Files.readAllLines(new File(testResultsFile).toPath)
-    val storyResults = testResults.asScala.toList.map { line =>
+    val testResults     = Files.readAllLines(new File(testResultsFile).toPath)
+    val storyResults    = testResults.asScala.toList.map { line =>
       val (story, test, status) = line.split(PIPE).toList match {
         case s :: t :: st :: Nil => (s, t, st)
-        case _ =>
+        case _                   =>
           throw new RuntimeException(
             s"**** Provided data is not in valid format : '$line' ****\n" +
               "Test-Story mapping should be in 'story number | test name | test status' format (Pipe '|' separated format)"
@@ -62,8 +62,9 @@ object TestRequirementMapper {
         .filter(_.nonEmpty)                 // remove if Requirement number is empty
         .getOrElse(Requirement.EMPTY)
 
-      TestRequirementMapped(storyResult.story, correspondingReq, storyResult.test, storyResult.status)
-    }.sortWith((a, b) => a.story.compareTo(b.story) < 0)
+        TestRequirementMapped(storyResult.story, correspondingReq, storyResult.test, storyResult.status)
+      }
+      .sortWith((a, b) => a.story.compareTo(b.story) < 0)
 
     val outputFile = new File(outputPath)
     val indexPath  = "/index.html"

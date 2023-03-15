@@ -1,8 +1,9 @@
+package some;
+
 import org.junit.Assert;
 import org.junit.Test;
-import org.scalatestplus.junit.JUnitSuite;
 
-public class SampleTest extends JUnitSuite {
+public class SampleTest {
 
     @Test
     public void should_be_able_to_publish_concurrently_to_the_different_channel__ESW_28_ESW_45() {

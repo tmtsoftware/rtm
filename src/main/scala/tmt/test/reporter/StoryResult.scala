@@ -15,9 +15,9 @@ case class TestRequirementMapped(story: String, reqNum: String, test: String, st
 }
 
 object Separators {
-  val PIPE        = '|' // separator for test name and story number
+  val PIPE        = '|'  // separator for test name and story number
   val NEWLINE     = "\n"
-  val COMMA       = "," // separator for multiple story number
+  val COMMA       = ","  // separator for multiple story number
   val PARENTHESIS = "\\("
   val __ : String = "__" // separator for java
   val UNDERSCORE  = "_"
