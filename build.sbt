@@ -4,7 +4,7 @@ inThisBuild(
   Seq(
     organization := "com.github.tmtsoftware.rtm",
     scalaVersion := "3.3.0",
-    version      := "0.3.0",
+    version      := "0.3.1",
     resolvers += "jitpack" at "https://jitpack.io",
     scalacOptions ++= Seq(
       "-encoding",
