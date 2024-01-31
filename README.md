@@ -4,7 +4,7 @@
 Add following line to build.sbt
 
 ```
-libraryDependencies += "com.github.tmtsoftware"  %% "rtm" % "0.3.0"
+libraryDependencies += "com.github.tmtsoftware"  %% "rtm" % "0.3.2"
 ```
 
 
