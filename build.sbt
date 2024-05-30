@@ -3,7 +3,7 @@ name := "rtm-root"
 inThisBuild(
   Seq(
     organization := "com.github.tmtsoftware.rtm",
-    scalaVersion := "3.3.3",
+    scalaVersion := "3.4.2",
     version      := "0.3.2",
     resolvers += "jitpack" at "https://jitpack.io",
     scalacOptions ++= Seq(
@@ -11,7 +11,10 @@ inThisBuild(
       "UTF-8",
       "-feature",
       "-unchecked",
-      "-deprecation"
+      "-deprecation",
+//      "-rewrite",
+//      "-source",
+//      "3.4-migration"
     )
   )
 )
