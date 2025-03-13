@@ -3,8 +3,8 @@ name := "rtm-root"
 inThisBuild(
   Seq(
     organization := "com.github.tmtsoftware.rtm",
-    scalaVersion := "3.6.2",
-    version      := "0.3.2",
+    scalaVersion := "3.6.4",
+    version      := "0.4.0",
     resolvers += "jitpack" at "https://jitpack.io",
     scalacOptions ++= Seq(
       "-encoding",
