@@ -19,7 +19,7 @@ inThisBuild(
 lazy val rtm = project.settings(
   Settings.addAliases(),
   testOptions += Tests.Argument(TestFrameworks.JUnit, "-v"),
-  libraryDependencies += "org.scalatest" %% "scalatest"         % "3.2.18",
+  libraryDependencies += "org.scalatest" %% "scalatest"         % "3.2.19",
   libraryDependencies += "net.aichler"    % "jupiter-interface" % "0.11.1" % Provided,
   libraryDependencies += "com.lihaoyi"   %% "scalatags"         % "0.13.1",
   libraryDependencies += "com.github.sbt" % "junit-interface"   % "0.13.3"
