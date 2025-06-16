@@ -29,6 +29,7 @@ object RtmAggregator extends App {
       val (storyId, someText) = story.split(" ").toList match {
         case s :: Nil => (s, "")
         case s :: theRest => (s, theRest.mkString(" "))
+        case Nil => (story, "")
       }
 
       TestRequirementMapped(storyId, req, project + ": " + test + " " + someText, status.toUpperCase)
