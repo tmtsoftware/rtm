@@ -14,7 +14,7 @@ object TestRequirementMapper {
     // read program parameters
     val (testResultsFile, requirementsFile, outputPath) = args.toList match {
       case t :: r :: o :: Nil => (t, r, o)
-      case _                  =>
+      case _ =>
         throw new RuntimeException(
           "**** Provide appropriate parameters. **** \n " +
             "Required parameters : <file with test-story mapping> <file with story-requirement mapping> <output file>"
@@ -24,11 +24,11 @@ object TestRequirementMapper {
     // read test-story mapping
     val testResultsPath = new File(testResultsFile).toPath.toAbsolutePath
     println("[INFO] Reading test-story mapping file - " + testResultsPath)
-    val testResults     = Files.readAllLines(new File(testResultsFile).toPath)
-    val storyResults    = testResults.asScala.toList.map { line =>
+    val testResults = Files.readAllLines(new File(testResultsFile).toPath)
+    val storyResults = testResults.asScala.toList.map { line =>
       val (story, test, status) = line.split(PIPE).toList match {
         case s :: t :: st :: Nil => (s, t, st)
-        case _                   =>
+        case _ =>
           throw new RuntimeException(
             s"**** Provided data is not in valid format : '$line' ****\n" +
               "Test-Story mapping should be in 'story number | test name | test status' format (Pipe '|' separated format)"
@@ -37,22 +37,29 @@ object TestRequirementMapper {
       StoryResult(story.strip(), test.strip(), status.strip())
     }
 
+    if (storyResults.isEmpty) throw new RuntimeException(("test-story mapping file is empty."))
+
     // read story-requirement mapping
     println("[INFO] Reading story-requirement mapping file - " + new File(requirementsFile).toPath.toAbsolutePath)
     val requirementsContent = Files.readAllLines(new File(requirementsFile).toPath)
 
-    val requirements = requirementsContent.asScala.toList.map { line =>
-      val (story, requirement) = line.splitAt(line.indexOf(COMMA)) match {
-        case (s, req) if s.nonEmpty => (s, req.drop(1)) // drop to remove the first comma & requirement can be empty.
-        case _ =>
-          throw new RuntimeException(
-            s"**** Provided data is not in valid format : '$line' ****\n" +
-              s"Story-Requirement mapping should be in 'story number $COMMA requirement' format (Comma ',' separated format)"
-          )
+    val requirements = requirementsContent
+      .asScala
+      .toList
+      .filter(_.strip.nonEmpty)
+      .map { line =>
+        val (story, requirement) = line.splitAt(line.indexOf(COMMA)) match {
+          case (s, req) if s.nonEmpty => (s, req.drop(1)) // drop to remove the first comma & requirement can be empty.
+          case _ =>
+            throw new RuntimeException(
+              s"**** Provided data is not in valid format : '$line' ****\n" +
+                s"Story-Requirement mapping should be in 'story number $COMMA requirement' format (Comma ',' separated format)"
+            )
+        }
+        Requirement(story.strip(), requirement.strip().replaceAll("\"", ""))
       }
 
-      Requirement(story.strip(), requirement.strip().replaceAll("\"", ""))
-    }
+    if (requirements.isEmpty) throw new RuntimeException(("Story-requirement mapping file is empty."))
 
     // map tests to requirements and sort by story ID
     val testAndReqMapped = storyResults.map { storyResult =>
