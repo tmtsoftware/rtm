@@ -20,7 +20,10 @@ class KtTestReporter extends AfterTestExecutionCallback with AfterAllCallback {
   }
 
   private def addResult(name: String, testStatus: String): Unit = {
-    val (testName, stories) = CommonUtil.getTestData(name, Separators.PIPE.toString)
+    // Spaces in test names might have been replaced with Underscores so that Kotlin tests
+    // could be run in JUnit6.  Change all underscores back to space.
+    val newName = name.replace('_', ' ')
+    val (testName, stories) = CommonUtil.getTestData(newName, Separators.PIPE.toString)
 
     results ++= stories
       .drop(1)                 // Drop the "|"
